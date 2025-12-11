@@ -78,6 +78,7 @@ installed_tests = {
   },
   'pixbuf-icc': {
     'suites': ['io'],
+    'skip': enabled_loaders.contains('glycin'),
   },
   'pixbuf-jpeg': {
     'suites': ['format'],
