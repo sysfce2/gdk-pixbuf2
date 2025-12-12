@@ -71,7 +71,7 @@ installed_tests = {
   },
   'pixbuf-fail': { 'suites': ['conform', 'slow'], },
   'pixbuf-icon-serialize': { 'suites': ['conform'], },
-  'pixbuf-randomly-modified': { 'suites': ['slow'], },
+  'pixbuf-randomly-modified': { 'suites': ['slow'], 'skip': enabled_loaders.contains('glycin') },
   'pixbuf-threads': { 'suites': ['io'], },
   'pixbuf-gif': {
     'suites': ['io'],
