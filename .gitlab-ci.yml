@@ -21,7 +21,7 @@ variables:
   FDO_UPSTREAM_REPO: GNOME/gdk-pixbuf
   CCACHE_DIR: _ccache
   COMMON_MESON_FLAGS: "-Dwerror=true -Dglib:werror=false"
-  LOADERS_FLAGS: "-Dpng=enabled -Djpeg=enabled -Dtiff=enabled -Dgif=enabled -Dothers=enabled -Dglycin=disabled"
+  LOADERS_NO_GLYCIN_FLAGS: "-Dpng=enabled -Djpeg=enabled -Dtiff=enabled -Dgif=enabled -Dothers=enabled -Dglycin=disabled"
   MESON_TEST_TIMEOUT_MULTIPLIER: 3
 
 workflow:
@@ -49,8 +49,8 @@ default:
 
 .container.fedora:
   variables:
-    BASE_TAG: '2025-10-07.0'
-    FDO_DISTRIBUTION_VERSION: 42
+    BASE_TAG: '2025-12-12.0'
+    FDO_DISTRIBUTION_VERSION: 43
     FDO_DISTRIBUTION_TAG: "x86_64-${BASE_TAG}"
     FDO_DISTRIBUTION_PACKAGES:
         ccache
@@ -64,6 +64,7 @@ default:
         gi-docgen
         git
         glib2-devel
+        glycin-devel
         gobject-introspection-devel
         itstool
         jasper-devel
@@ -146,6 +147,19 @@ style-check-diff:
   script:
     - .gitlab/scripts/run-style-check-diff.sh
 
+fedora-noglycin-x86_64:
+  extends:
+    - .test-runner
+    - .build-fedora-default
+  stage: build
+  needs: ["container:fedora"]
+  variables:
+    EXTRA_MESON_FLAGS: "--buildtype=debug --default-library=both"
+  script:
+    - meson setup ${COMMON_MESON_FLAGS} ${LOADERS_NO_GLYCIN_FLAGS} ${EXTRA_MESON_FLAGS} _build
+    - meson compile -C _build
+    - meson test -C _build
+
 fedora-x86_64:
   extends:
     - .test-runner
@@ -155,7 +169,7 @@ fedora-x86_64:
   variables:
     EXTRA_MESON_FLAGS: "--buildtype=debug --default-library=both"
   script:
-    - meson setup ${COMMON_MESON_FLAGS} ${LOADERS_FLAGS} ${EXTRA_MESON_FLAGS} _build
+    - meson setup ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} _build
     - meson compile -C _build
     - meson test -C _build
 
@@ -173,12 +187,32 @@ release-build:
     - meson setup
             --prefix=${CI_PROJECT_DIR}/_install
             ${COMMON_MESON_FLAGS}
-            ${LOADERS_FLAGS}
             ${EXTRA_MESON_FLAGS}
             _build
     - meson compile -C _build
     - meson dist -C _build
     - cp -r "_build/meson-dist" "${CI_PROJECT_DIR}/public-dist/"
+
+asan-build-noglycin:
+  extends:
+    - .test-runner
+    - .build-fedora-default
+  tags: [ asan ]
+  stage: analysis
+  needs: ['container:fedora']
+  variables:
+    EXTRA_MESON_FLAGS: "--buildtype=debug -Ddocumentation=false -Dintrospection=disabled"
+    ASAN_OPTIONS: allocator_may_return_null=1
+  script:
+    - meson setup
+        ${COMMON_MESON_FLAGS}
+        ${LOADERS_NO_GLYCIN_FLAGS}
+        ${EXTRA_MESON_FLAGS}
+        -Db_sanitize=address
+        -Db_lundef=false
+        _build
+    - meson compile -C _build
+    - meson test --no-suite=slow -C _build
 
 asan-build:
   extends:
@@ -193,9 +227,28 @@ asan-build:
   script:
     - meson setup
         ${COMMON_MESON_FLAGS}
-        ${LOADERS_FLAGS}
         ${EXTRA_MESON_FLAGS}
         -Db_sanitize=address
+        -Db_lundef=false
+        _build
+    - meson compile -C _build
+    - meson test --no-suite=slow -C _build
+
+ubsan-build-noglycin:
+  extends:
+    - .test-runner
+    - .build-fedora-default
+  tags: [ asan ]
+  stage: analysis
+  needs: ['container:fedora']
+  variables:
+    EXTRA_MESON_FLAGS: "--buildtype=debug -Ddocumentation=false -Dintrospection=disabled"
+  script:
+    - meson setup
+        ${COMMON_MESON_FLAGS}
+        ${LOADERS_NO_GLYCIN_FLAGS}
+        ${EXTRA_MESON_FLAGS}
+        -Db_sanitize=undefined
         -Db_lundef=false
         _build
     - meson compile -C _build
@@ -213,7 +266,6 @@ ubsan-build:
   script:
     - meson setup
         ${COMMON_MESON_FLAGS}
-        ${LOADERS_FLAGS}
         ${EXTRA_MESON_FLAGS}
         -Db_sanitize=undefined
         -Db_lundef=false
@@ -233,7 +285,7 @@ static-scan:
   script:
     - CC=clang meson setup
         ${COMMON_MESON_FLAGS}
-        ${LOADERS_FLAGS}
+        ${LOADERS_NO_GLYCIN_FLAGS}
         ${EXTRA_MESON_FLAGS}
         _scan_build
     - ninja -C _scan_build scan-build
@@ -258,7 +310,7 @@ macos-build:
   script:
     - meson setup
         ${COMMON_MESON_FLAGS}
-        ${LOADERS_FLAGS}
+        ${LOADERS_NO_GLYCIN_FLAGS}
         ${EXTRA_MESON_FLAGS}
         _build
     - meson compile -C _build
@@ -296,7 +348,7 @@ reference:
   script:
     - meson setup
         ${COMMON_MESON_FLAGS}
-        ${LOADERS_FLAGS}
+        ${LOADERS_NO_GLYCIN_FLAGS}
         ${EXTRA_MESON_FLAGS}
         _build
     - meson compile -C _build

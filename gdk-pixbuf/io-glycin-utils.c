@@ -280,6 +280,11 @@ gdk_pixbuf_glycin_animation_iter_get_pixbuf (GdkPixbufAnimationIter *iter)
 static gboolean
 gdk_pixbuf_glycin_animation_iter_on_currently_loading_frame (G_GNUC_UNUSED GdkPixbufAnimationIter *iter)
 {
+  GdkPixbufGlycinAnimationIter *self = (GdkPixbufGlycinAnimationIter *) iter;
+
+  if (g_array_index (self->animation->decoded, GdkPixbufGlycinFrame, self->idx).is_last_frame)
+    return TRUE;
+
   return FALSE;
 }
 
@@ -293,7 +298,7 @@ gdk_pixbuf_glycin_animation_iter_advance (GdkPixbufAnimationIter *iter,
 
   new_time = timeval_to_usec (current_time);
 
-  while ((self->time + g_array_index (self->animation->decoded, GdkPixbufGlycinFrame, self->idx).delay) < new_time)
+  while ((self->time + g_array_index (self->animation->decoded, GdkPixbufGlycinFrame, self->idx).delay) <= new_time)
     {
       self->time += g_array_index (self->animation->decoded, GdkPixbufGlycinFrame, self->idx).delay;
 
