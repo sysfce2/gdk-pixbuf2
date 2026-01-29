@@ -52,6 +52,10 @@ load_image (gpointer data,
   fclose (file);
 
   gdk_pixbuf_loader_close (loader, &error);
+
+  if (g_error_matches (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_UNKNOWN_TYPE))
+    g_clear_error (&error);
+
   g_assert_no_error (error);
 
   g_object_unref (loader);
