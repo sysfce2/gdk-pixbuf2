@@ -1,3 +1,10 @@
+2.44.5
+===
+
+- Make the testsuite work with glycin
+- glycin: Add support for xpm and xbm
+- TRanslation updates
+
 2.44.4
 ===
 
