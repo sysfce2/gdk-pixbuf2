@@ -506,8 +506,9 @@ done:
     }
   else if (g_error_matches (local_error, GLY_LOADER_ERROR, GLY_LOADER_ERROR_UNKNOWN_IMAGE_FORMAT))
     {
+      /* glycins message for this error is excessive */
       g_set_error_literal (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_UNKNOWN_TYPE,
-                           local_error->message);
+                           "Unsupported image format");
       g_clear_error (&local_error);
     }
   else if (local_error)
