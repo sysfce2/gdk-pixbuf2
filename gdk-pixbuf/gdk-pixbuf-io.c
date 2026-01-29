@@ -679,6 +679,7 @@ gdk_pixbuf_io_init_builtin (void)
         load_one_builtin_module (tga);
         load_one_builtin_module (tiff);
         load_one_builtin_module (webp);
+        load_one_builtin_module (xpm);
 #endif
 #ifdef INCLUDE_android
 	load_one_builtin_module (jpeg);
@@ -735,6 +736,7 @@ module (gdip_gif);
 module (gdip_jpeg);
 module (gdip_png);
 module (gdip_tiff);
+
 module (glycin_avif);
 module (glycin_bmp);
 module (glycin_dds);
@@ -752,6 +754,8 @@ module (glycin_svg);
 module (glycin_tga);
 module (glycin_tiff);
 module (glycin_webp);
+module (glycin_xpm);
+
 module (android_jpeg);
 module (android_png);
 module (android_gif);
@@ -813,6 +817,7 @@ gdk_pixbuf_load_module_unlocked (GdkPixbufModule *image_module,
         try_module (tga,     glycin_tga);
         try_module (tiff,    glycin_tiff);
         try_module (webp,    glycin_webp);
+        try_module (xpm,     glycin_xpm);
 #endif
 #ifdef INCLUDE_android
 	try_module (jpeg,android_jpeg);
