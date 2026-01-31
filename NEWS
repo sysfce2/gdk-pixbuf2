@@ -2,8 +2,9 @@
 ===
 
 - Make the testsuite work with glycin
-- glycin: Add support for xpm and xbm
-- TRanslation updates
+- glycin: Add support for xpm and xbm.
+  Note that xpm+xbm support is new in glycin 2.1
+- Translation updates
 
 2.44.4
 ===
