@@ -70,6 +70,7 @@ MODULE_ENTRY (fill_vtable) (GdkPixbufModule *module)
 MODULE_ENTRY (fill_info) (GdkPixbufFormat *info)
 {
   static const GdkPixbufModulePattern signature[] = {
+    { "RIFF    WEBP", "    xxxx    ", 100 },
     { NULL, NULL, 0 }
   };
   static const gchar *mime_types[] = {
