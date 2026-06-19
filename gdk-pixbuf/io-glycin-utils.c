@@ -65,7 +65,7 @@ g_file_from_file (FILE    *f,
   char filename[256] = { 0, };
   ssize_t s;
 
-  g_snprintf (proc_path, sizeof (proc_path), "/proc/%u/fd/%d", getpid (), fileno (f));
+  g_snprintf (proc_path, sizeof (proc_path), "/proc/self/fd/%d", fileno (f));
   s = readlink (proc_path, filename, sizeof (filename));
 
   if (s < 0)
