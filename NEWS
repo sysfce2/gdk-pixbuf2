@@ -1,3 +1,12 @@
+2.44.7
+===
+- xpm: Fix loading the xpm module if built-in
+- glycin: Fix the build on 32bit
+- glycin: Use fwrite to avoid problems with saving
+- glycin: Add signature for webp
+- glycin: Make filename tricks work in pid namespaces
+- Translation updates
+
 2.44.6
 ===
 
